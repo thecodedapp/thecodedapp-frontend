@@ -1,9 +1,6 @@
 import {
-    Nunito_300Light,
     Nunito_400Regular,
-    Nunito_600SemiBold,
     Nunito_700Bold,
-    Nunito_800ExtraBold,
     Nunito_900Black,
     useFonts,
 } from "@expo-google-fonts/nunito";
@@ -22,17 +19,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { API_URL } from "../lib/api";
 import { saveToken } from "../lib/authStorage";
   
-  export default function AuthScreen() {
+  export default function SignupScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
   
     const [fontsLoaded] = useFonts({
-      Nunito_300Light,
       Nunito_400Regular,
-      Nunito_600SemiBold,
       Nunito_700Bold,
-      Nunito_800ExtraBold,
       Nunito_900Black,
     });
   
@@ -40,11 +34,11 @@ import { saveToken } from "../lib/authStorage";
       return null;
     }
   
-    const handleLogin = async () => {
+    const handleSignup = async () => {
       setErrorMessage("");
   
       try {
-        const response = await fetch(`${API_URL}/auth/login`, {
+        const response = await fetch(`${API_URL}/auth/signup`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -58,17 +52,17 @@ import { saveToken } from "../lib/authStorage";
         const data = await response.json();
   
         if (!response.ok) {
-          setErrorMessage(data.error || "Login failed");
+          setErrorMessage(data.error || "Sign up failed");
           return;
         }
   
         await saveToken(data.token);
   
-        console.log("Login successful");
+        console.log("Signup successful");
   
         router.push("/goals");
       } catch (error) {
-        console.error("Login failed:", error);
+        console.error("Signup failed:", error);
   
         setErrorMessage(
           "Could not connect to the server. Please try again."
@@ -81,12 +75,12 @@ import { saveToken } from "../lib/authStorage";
         <Text style={styles.wordmark}>maco</Text>
   
         <View style={styles.formSection}>
-          <Text style={styles.title}>Welcome back!</Text>
+          <Text style={styles.title}>Create an account</Text>
   
           <TextInput
-            placeholder="Email"
-            placeholderTextColor="#3A3A3A"
             style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#7A7A7A"
             autoCapitalize="none"
             keyboardType="email-address"
             value={email}
@@ -94,10 +88,10 @@ import { saveToken } from "../lib/authStorage";
           />
   
           <TextInput
-            placeholder="Password"
-            placeholderTextColor="#3A3A3A"
-            secureTextEntry
             style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#7A7A7A"
+            secureTextEntry
             value={password}
             onChangeText={setPassword}
           />
@@ -108,8 +102,8 @@ import { saveToken } from "../lib/authStorage";
   
           <View style={styles.buttonWrapper}>
             <MacoPrimaryButton
-              label="Login"
-              onPress={handleLogin}
+              label="Sign up"
+              onPress={handleSignup}
               width="58%"
               height={38}
               fontSize={15}
@@ -118,19 +112,19 @@ import { saveToken } from "../lib/authStorage";
             />
           </View>
   
-          <Text style={styles.signupText}>
-            New here?{" "}
+          <Text style={styles.loginText}>
+            Already have an account?{" "}
             <Text
-              style={styles.signupLink}
-              onPress={() => router.push("/signup")}
+              style={styles.loginLink}
+              onPress={() => router.push("/auth")}
             >
-              Sign up
+              Log in
             </Text>
           </Text>
         </View>
   
         <Image
-          source={require("../assets/images/maco-jump.jpeg")}
+          source={require("../assets/images/happy-maco-on-phone.png")}
           style={styles.macoImage}
           resizeMode="contain"
         />
@@ -147,8 +141,8 @@ import { saveToken } from "../lib/authStorage";
     },
   
     wordmark: {
-      marginTop: 115,
-      fontSize: 40,
+      marginTop: 150,
+      fontSize: 48,
       fontFamily: "Nunito_900Black",
       color: "#000000",
       zIndex: 2,
@@ -156,15 +150,15 @@ import { saveToken } from "../lib/authStorage";
   
     formSection: {
       width: "82%",
-      marginTop: 42,
+      marginTop: 38,
       zIndex: 2,
     },
   
     title: {
-      fontSize: 20,
+      fontSize: 24,
       fontFamily: "Nunito_700Bold",
       color: "#1F1F1F",
-      marginBottom: 14,
+      marginBottom: 10,
     },
   
     input: {
@@ -176,7 +170,7 @@ import { saveToken } from "../lib/authStorage";
       borderRadius: 14,
       paddingHorizontal: 14,
       fontSize: 16,
-      fontFamily: "Nunito_600SemiBold",
+      fontFamily: "Nunito_400Regular",
       color: "#1F1F1F",
       marginBottom: 14,
     },
@@ -193,27 +187,27 @@ import { saveToken } from "../lib/authStorage";
     buttonWrapper: {
       width: "100%",
       alignItems: "center",
-      marginTop: 2,
+      marginTop: -2,
     },
   
-    signupText: {
-      marginTop: 10,
+    loginText: {
+      marginTop: 8,
       textAlign: "center",
       fontSize: 14,
       fontFamily: "Nunito_700Bold",
       color: "#1F1F1F",
     },
   
-    signupLink: {
+    loginLink: {
       fontFamily: "Nunito_400Regular",
       textDecorationLine: "underline",
     },
   
     macoImage: {
       position: "absolute",
-      bottom: 18,
-      width: "88%",
-      height: 450,
+      bottom: 35,
+      width: "82%",
+      height: 310,
       zIndex: 0,
     },
   });

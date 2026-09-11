@@ -6,6 +6,7 @@ import {
     Nunito_900Black,
     useFonts,
 } from "@expo-google-fonts/nunito";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
     Image,
@@ -15,6 +16,8 @@ import {
     View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+  
+  import { deleteToken } from "../lib/authStorage";
   
   const goals = [
     "I'm new to coding",
@@ -48,6 +51,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
   
         return [...currentGoals, goal];
       });
+    };
+  
+    const handleLogout = async () => {
+      await deleteToken();
+      router.replace("/");
     };
   
     return (
@@ -93,10 +101,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
           style={styles.macoImage}
           resizeMode="contain"
         />
-        {selectedGoals.length > 0 && (
-        <Pressable style={styles.nextButton}>
-            <Text style={styles.nextText}>Next →</Text>
+  
+        <Pressable
+          style={styles.logoutButton}
+          onPress={handleLogout}
+        >
+          <Text style={styles.logoutText}>Log out</Text>
         </Pressable>
+  
+        {selectedGoals.length > 0 && (
+          <Pressable style={styles.nextButton}>
+            <Text style={styles.nextText}>Next →</Text>
+          </Pressable>
         )}
       </SafeAreaView>
     );
@@ -167,25 +183,38 @@ import { SafeAreaView } from "react-native-safe-area-context";
       fontFamily: "Nunito_600SemiBold",
       textAlign: "center",
     },
-
+  
+    logoutButton: {
+      position: "absolute",
+      left: 24,
+      bottom: 35,
+      zIndex: 2,
+    },
+  
+    logoutText: {
+      fontSize: 14,
+      fontFamily: "Nunito_600SemiBold",
+      color: "#1F1F1F",
+      textDecorationLine: "underline",
+    },
+  
     nextButton: {
-        position: "absolute",
-        right: 28,
-        bottom: 18,
+      position: "absolute",
+      right: 28,
+      bottom: 35,
+    },
+  
+    nextText: {
+      fontSize: 32.5,
+      fontFamily: "Nunito_700Bold",
+      color: "#1F1F1F",
+      textShadowColor: "rgba(0, 0, 0, 0.18)",
+      textShadowOffset: {
+        width: 1,
+        height: 2,
       },
-      
-      nextText: {
-        fontSize: 18,
-        fontFamily: "Nunito_700Bold",
-        color: "#1F1F1F",
-
-        textShadowColor: "rgba(0, 0, 0, 0.18)",
-        textShadowOffset: {
-            width: 1,
-            height: 2,
-        },
-        textShadowRadius: 2,
-      },
+      textShadowRadius: 2,
+    },
   
     macoImage: {
       position: "absolute",

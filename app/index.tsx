@@ -1,13 +1,11 @@
 import {
   Nunito_300Light,
-  Nunito_400Regular,
-  Nunito_600SemiBold,
   Nunito_700Bold,
-  Nunito_800ExtraBold,
   Nunito_900Black,
   useFonts,
 } from "@expo-google-fonts/nunito";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -15,37 +13,73 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import MacoPrimaryButton from "../components/MacoPrimaryButton";
+import { API_URL } from "../lib/api";
+import { deleteToken, getToken } from "../lib/authStorage";
 
 export default function WelcomeScreen() {
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
   const [fontsLoaded] = useFonts({
     Nunito_300Light,
-    Nunito_400Regular,
-    Nunito_600SemiBold,
     Nunito_700Bold,
-    Nunito_800ExtraBold,
-    Nunito_900Black
+    Nunito_900Black,
   });
-  
-  if (!fontsLoaded) {
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = await getToken();
+
+        if (!token) {
+          setCheckingAuth(false);
+          return;
+        }
+
+        const response = await fetch(`${API_URL}/auth/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          router.replace("/goals");
+          return;
+        }
+
+        await deleteToken();
+      } catch (error) {
+        console.error("Failed to verify auth:", error);
+      }
+
+      setCheckingAuth(false);
+    };
+
+    checkAuth();
+  }, []);
+
+  if (!fontsLoaded || checkingAuth) {
     return null;
   }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topSection}>
         <Text style={styles.wordmark}>maco</Text>
 
         <Text style={styles.tagline}>
-          Learn to code{"\n"}anywhere
+          coding made a little less scary.
         </Text>
       </View>
 
-  <View style={styles.buttonWrapper}>
-    <MacoPrimaryButton
-      label="Start learning"
-      onPress={() => router.push("/auth")}
-    />
-  </View>
+      <View style={styles.buttonWrapper}>
+        <MacoPrimaryButton
+          label="Start learning"
+          onPress={() => router.push("/auth")}
+        />
+      </View>
 
       <Image
         source={require("../assets/images/maco-peek.png")}
@@ -82,9 +116,9 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_300Light",
     textAlign: "left",
     color: "#1F1F1F",
-    paddingTop: 18
+    paddingTop: 18,
   },
-  
+
   buttonWrapper: {
     position: "absolute",
     bottom: 235,
