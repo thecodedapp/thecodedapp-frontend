@@ -184,7 +184,7 @@ export default function VerifyEmailScreen() {
 
         <View style={styles.resendRow}>
           <Text style={styles.resendQuestion}>
-            Didn't get it?{" "}
+            {"Didn't get it? "}
           </Text>
 
           <Pressable
