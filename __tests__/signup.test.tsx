@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
-import SignupScreen from "./signup";
+import SignupScreen from "../app/signup";
 import { saveToken } from "../lib/authStorage";
 
 jest.mock("expo-router", () => ({

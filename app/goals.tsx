@@ -110,7 +110,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
         </Pressable>
   
         {selectedGoals.length > 0 && (
-          <Pressable style={styles.nextButton}>
+          <Pressable
+            style={styles.nextButton}
+            onPress={() => router.replace("/(tabs)")}
+          >
             <Text style={styles.nextText}>Next →</Text>
           </Pressable>
         )}
