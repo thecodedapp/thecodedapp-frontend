@@ -1,13 +1,32 @@
 name: Frontend CI
-on: [push, pull_request]
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - run: corepack enable
-      - run: pnpm i --frozen-lockfile || npm i
-      - run: npx tsc --noEmit || true
-      - run: npx expo export --platform web || true
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
