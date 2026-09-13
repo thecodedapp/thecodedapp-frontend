@@ -32,4 +32,16 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Run frontend tests
-        run: npm test -- --runInBand
+        shell: bash
+        run: |
+          set +e
+          npm test -- --runInBand 2>&1 | tee test-output.txt
+          status=${PIPESTATUS[0]}
+
+          {
+            echo "## Frontend test summary"
+            echo
+            grep -E "^(Test Suites:|Tests:|Snapshots:|Time:)" test-output.txt || true
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          exit $status
