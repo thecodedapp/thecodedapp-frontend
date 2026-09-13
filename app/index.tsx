@@ -1,6 +1,9 @@
 import {
   Nunito_300Light,
+  Nunito_400Regular,
+  Nunito_600SemiBold,
   Nunito_700Bold,
+  Nunito_800ExtraBold,
   Nunito_900Black,
   useFonts,
 } from "@expo-google-fonts/nunito";
@@ -23,7 +26,10 @@ export default function WelcomeScreen() {
 
   const [fontsLoaded] = useFonts({
     Nunito_300Light,
+    Nunito_400Regular,
+    Nunito_600SemiBold,
     Nunito_700Bold,
+    Nunito_800ExtraBold,
     Nunito_900Black,
   });
 
@@ -45,7 +51,19 @@ export default function WelcomeScreen() {
         });
 
         if (response.ok) {
-          router.replace("/goals");
+          const data = await response.json();
+
+          if (data.user.emailVerified) {
+            router.replace("/goals");
+          } else {
+            router.replace({
+              pathname: "/verify-email",
+              params: {
+                email: data.user.email,
+              },
+            });
+          }
+
           return;
         }
 
@@ -70,7 +88,7 @@ export default function WelcomeScreen() {
         <Text style={styles.wordmark}>maco</Text>
 
         <Text style={styles.tagline}>
-          coding made a little less scary.
+          Learn to code{"\n"}anywhere
         </Text>
       </View>
 
