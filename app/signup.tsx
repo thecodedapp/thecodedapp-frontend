@@ -295,10 +295,11 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   macoImage: {
-    width: "62%",
-    maxWidth: 280,
-    height: 215,
-    marginBottom: -18,
+    position: "absolute",
+    top: 105,
+    width: "68%",
+    maxWidth: 300,
+    height: 235,
     zIndex: 2,
   },
 });
