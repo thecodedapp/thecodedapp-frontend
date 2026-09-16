@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: "68%",
+    height: "85%",
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-end",
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 190,
+    height: 240,
     zIndex: 2,
   },
 
