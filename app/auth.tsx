@@ -7,10 +7,12 @@ import {
   Nunito_900Black,
   useFonts,
 } from "@expo-google-fonts/nunito";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
   Image,
+  ImageBackground,
   StyleSheet,
   Text,
   TextInput,
@@ -21,6 +23,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MacoPrimaryButton from "../components/MacoPrimaryButton";
 import { API_URL } from "../lib/api";
 import { saveToken } from "../lib/authStorage";
+import { getGoalsCompleted } from "../lib/goalStorage";
+
+const COLORS = {
+  cream: "#FFF8EE",
+  forest: "#2F785B",
+  navy: "#123B45",
+  muted: "#657A8B",
+  pond: "#DFF7F6",
+  input: "#FFFDF8",
+  inputBorder: "#CFE6D7",
+};
 
 export default function AuthScreen() {
   const [email, setEmail] = useState("");
@@ -65,7 +78,8 @@ export default function AuthScreen() {
       await saveToken(data.token);
 
       if (data.user.emailVerified) {
-        router.replace("/goals");
+        const goalsCompleted = await getGoalsCompleted();
+        router.replace(goalsCompleted ? "/course-map" : "/goals");
       } else {
         router.replace({
           pathname: "/verify-email",
@@ -76,73 +90,94 @@ export default function AuthScreen() {
       }
     } catch (error) {
       console.error("Login failed:", error);
-
-      setErrorMessage(
-        "Could not connect to the server. Please try again."
-      );
+      setErrorMessage("Could not connect to the server. Please try again.");
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.wordmark}>maco</Text>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <ImageBackground
+        source={require("../assets/images/pond-background-fade.png")}
+        style={styles.pondSection}
+        imageStyle={styles.pondBackgroundImage}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          pointerEvents="none"
+          colors={[
+            COLORS.cream,
+            "rgba(255,248,238,0.96)",
+            "rgba(255,248,238,0.82)",
+            "rgba(255,248,238,0.58)",
+            "rgba(255,248,238,0.28)",
+            "rgba(255,248,238,0)",
+          ]}
+          locations={[0, 0.14, 0.3, 0.5, 0.72, 1]}
+          style={styles.pondFade}
+        />
 
-      <View style={styles.formSection}>
+        <Image
+          source={require("../assets/images/maco-jump.png")}
+          style={styles.macoImage}
+          resizeMode="contain"
+        />
+      </ImageBackground>
+
+      <View style={styles.topSection}>
+        <Text style={styles.wordmark}>maco</Text>
+        <Text style={styles.kicker}>Good to see you again</Text>
         <Text style={styles.title}>Welcome back!</Text>
+        <Text style={styles.subtitle}>Pick up right where you left off.</Text>
 
-        <TextInput
-          placeholder="Email"
-          placeholderTextColor="#3A3A3A"
-          style={styles.input}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-
-        <TextInput
-          placeholder="Password"
-          placeholderTextColor="#3A3A3A"
-          secureTextEntry
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-        />
-
-        {errorMessage !== "" && (
-          <Text style={styles.errorText}>
-            {errorMessage}
-          </Text>
-        )}
-
-        <View style={styles.buttonWrapper}>
-          <MacoPrimaryButton
-            label="Login"
-            onPress={handleLogin}
-            width="58%"
-            height={38}
-            fontSize={15}
-            borderRadius={8}
-            shadowOffset={2}
+        <View style={styles.formSection}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            placeholder="you@example.com"
+            placeholderTextColor="#8CA09A"
+            style={styles.input}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
           />
-        </View>
 
-        <Text style={styles.signupText}>
-          New here?{" "}
-          <Text
-            style={styles.signupLink}
-            onPress={() => router.push("/signup")}
-          >
-            Sign up
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            placeholder="Your password"
+            placeholderTextColor="#8CA09A"
+            secureTextEntry
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+          />
+
+          {errorMessage !== "" && (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          )}
+
+          <View style={styles.buttonWrapper}>
+            <MacoPrimaryButton
+              label="Log In"
+              onPress={handleLogin}
+              width="100%"
+              height={58}
+              fontSize={18}
+              borderRadius={29}
+              shadowOffset={4}
+            />
+          </View>
+
+          <Text style={styles.signupText}>
+            New here?{" "}
+            <Text
+              style={styles.signupLink}
+              onPress={() => router.push("/signup")}
+            >
+              Create an account
+            </Text>
           </Text>
-        </Text>
+        </View>
       </View>
-
-      <Image
-        source={require("../assets/images/maco-jump.jpeg")}
-        style={styles.macoImage}
-        resizeMode="contain"
-      />
     </SafeAreaView>
   );
 }
@@ -150,83 +185,139 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFF8EE",
-    alignItems: "center",
+    backgroundColor: COLORS.cream,
     overflow: "hidden",
   },
 
-  wordmark: {
-    marginTop: 115,
-    fontSize: 40,
-    fontFamily: "Nunito_900Black",
-    color: "#000000",
+  topSection: {
+    zIndex: 2,
+    paddingHorizontal: 28,
+    paddingTop: 28,
+    paddingBottom: 24,
+    backgroundColor: "transparent",
   },
 
-  formSection: {
-    width: "82%",
-    marginTop: 42,
+  wordmark: {
+    textAlign: "center",
+    fontSize: 54,
+    lineHeight: 60,
+    letterSpacing: -2,
+    fontFamily: "Nunito_900Black",
+    color: COLORS.forest,
+  },
 
-    // Keeps the form tappable above Maco's large image bounds.
-    // Does not visually change the original layout.
-    zIndex: 2,
+  kicker: {
+    marginTop: -2,
+    textAlign: "center",
+    fontSize: 14,
+    fontFamily: "Nunito_700Bold",
+    color: COLORS.muted,
   },
 
   title: {
-    fontSize: 20,
-    fontFamily: "Nunito_700Bold",
-    color: "#1F1F1F",
-    marginBottom: 14,
+    marginTop: 26,
+    fontSize: 30,
+    lineHeight: 34,
+    textAlign: "center",
+    fontFamily: "Nunito_900Black",
+    color: COLORS.navy,
+  },
+
+  subtitle: {
+    marginTop: 5,
+    textAlign: "center",
+    fontSize: 15,
+    fontFamily: "Nunito_600SemiBold",
+    color: COLORS.muted,
+  },
+
+  formSection: {
+    width: "100%",
+    marginTop: 26,
+  },
+
+  label: {
+    marginLeft: 4,
+    marginBottom: 7,
+    fontSize: 14,
+    fontFamily: "Nunito_800ExtraBold",
+    color: COLORS.navy,
   },
 
   input: {
     width: "100%",
-    height: 52,
-    backgroundColor: "#FFF8EE",
+    height: 56,
+    backgroundColor: COLORS.input,
     borderWidth: 2,
-    borderColor: "#D9E8C3",
-    borderRadius: 14,
-    paddingHorizontal: 14,
+    borderColor: COLORS.inputBorder,
+    borderRadius: 18,
+    paddingHorizontal: 16,
     fontSize: 16,
     fontFamily: "Nunito_600SemiBold",
-    color: "#1F1F1F",
-    marginBottom: 14,
+    color: COLORS.navy,
+    marginBottom: 16,
   },
 
   errorText: {
     fontSize: 13,
-    fontFamily: "Nunito_400Regular",
+    fontFamily: "Nunito_600SemiBold",
     color: "#A94442",
     textAlign: "center",
-    marginTop: -4,
-    marginBottom: 10,
+    marginTop: -3,
+    marginBottom: 12,
   },
 
   buttonWrapper: {
     width: "100%",
-    alignItems: "center",
-    marginTop: 2,
+    marginTop: 4,
   },
 
   signupText: {
-    marginTop: 10,
+    marginTop: 18,
     textAlign: "center",
     fontSize: 14,
     fontFamily: "Nunito_700Bold",
-    color: "#1F1F1F",
+    color: COLORS.muted,
   },
 
   signupLink: {
-    fontFamily: "Nunito_400Regular",
+    fontFamily: "Nunito_800ExtraBold",
+    color: COLORS.forest,
     textDecorationLine: "underline",
   },
 
-  macoImage: {
+  pondSection: {
     position: "absolute",
-    bottom: 18,
-    width: "88%",
-    height: 450,
-
-    // Keeps the decorative image behind the form.
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    overflow: "hidden",
+    backgroundColor: COLORS.pond,
     zIndex: 0,
+  },
+
+  pondBackgroundImage: {
+    width: "100%",
+    height: "100%",
+  },
+
+  pondFade: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 240,
+    zIndex: 2,
+  },
+
+  macoImage: {
+    width: "78%",
+    maxWidth: 320,
+    height: 290,
+    marginBottom: 38,
   },
 });

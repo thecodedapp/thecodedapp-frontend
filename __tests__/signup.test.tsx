@@ -1,13 +1,14 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
-import SignupScreen from "./signup";
+import SignupScreen from "../app/signup";
 import { saveToken } from "../lib/authStorage";
 
 jest.mock("expo-router", () => ({
   router: {
     push: jest.fn(),
     replace: jest.fn(),
+    back: jest.fn(),
   },
 }));
 
@@ -34,9 +35,15 @@ describe("SignupScreen", () => {
 
     const { getByPlaceholderText, getByText } = render(<SignupScreen />);
 
-    fireEvent.changeText(getByPlaceholderText("Email"), "newuser@example.com");
-    fireEvent.changeText(getByPlaceholderText("Password"), "Password1");
-    fireEvent.press(getByText("Sign up"));
+    fireEvent.changeText(
+      getByPlaceholderText("you@example.com"),
+      "newuser@example.com"
+    );
+    fireEvent.changeText(
+      getByPlaceholderText("Create a password"),
+      "Password1"
+    );
+    fireEvent.press(getByText("Create account"));
 
     await waitFor(() => {
       expect(saveToken).toHaveBeenCalledWith("signup-token");
@@ -57,9 +64,15 @@ describe("SignupScreen", () => {
 
     const { getByPlaceholderText, getByText } = render(<SignupScreen />);
 
-    fireEvent.changeText(getByPlaceholderText("Email"), "newuser@example.com");
-    fireEvent.changeText(getByPlaceholderText("Password"), "password");
-    fireEvent.press(getByText("Sign up"));
+    fireEvent.changeText(
+      getByPlaceholderText("you@example.com"),
+      "newuser@example.com"
+    );
+    fireEvent.changeText(
+      getByPlaceholderText("Create a password"),
+      "password"
+    );
+    fireEvent.press(getByText("Create account"));
 
     expect(
       await waitFor(() =>

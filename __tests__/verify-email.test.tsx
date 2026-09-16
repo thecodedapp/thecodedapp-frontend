@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import VerifyEmailScreen from "./verify-email";
+import VerifyEmailScreen from "../app/verify-email";
 
 jest.mock("expo-router", () => ({
   router: {
