@@ -75,7 +75,7 @@ export default function AuthScreen() {
         return;
       }
 
-      await saveToken(data.token);
+      await saveToken(data.token, data.user.id);
 
       if (data.user.emailVerified) {
         const goalsCompleted = await getGoalsCompleted();
@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.cream,
     overflow: "hidden",
   },
-
   topSection: {
     zIndex: 2,
     paddingHorizontal: 28,
@@ -196,7 +195,6 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     backgroundColor: "transparent",
   },
-
   wordmark: {
     textAlign: "center",
     fontSize: 54,
@@ -205,7 +203,6 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_900Black",
     color: COLORS.forest,
   },
-
   kicker: {
     marginTop: -2,
     textAlign: "center",
@@ -213,7 +210,6 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     color: COLORS.muted,
   },
-
   title: {
     marginTop: 26,
     fontSize: 30,
@@ -222,7 +218,6 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_900Black",
     color: COLORS.navy,
   },
-
   subtitle: {
     marginTop: 5,
     textAlign: "center",
@@ -230,12 +225,10 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_600SemiBold",
     color: COLORS.muted,
   },
-
   formSection: {
     width: "100%",
     marginTop: 26,
   },
-
   label: {
     marginLeft: 4,
     marginBottom: 7,
@@ -243,7 +236,6 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_800ExtraBold",
     color: COLORS.navy,
   },
-
   input: {
     width: "100%",
     height: 56,
@@ -257,7 +249,6 @@ const styles = StyleSheet.create({
     color: COLORS.navy,
     marginBottom: 16,
   },
-
   errorText: {
     fontSize: 13,
     fontFamily: "Nunito_600SemiBold",
@@ -266,12 +257,10 @@ const styles = StyleSheet.create({
     marginTop: -3,
     marginBottom: 12,
   },
-
   buttonWrapper: {
     width: "100%",
     marginTop: 4,
   },
-
   signupText: {
     marginTop: 18,
     textAlign: "center",
@@ -279,13 +268,11 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     color: COLORS.muted,
   },
-
   signupLink: {
     fontFamily: "Nunito_800ExtraBold",
     color: COLORS.forest,
     textDecorationLine: "underline",
   },
-
   pondSection: {
     position: "absolute",
     left: 0,
@@ -299,12 +286,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.pond,
     zIndex: 0,
   },
-
   pondBackgroundImage: {
     width: "100%",
     height: "100%",
   },
-
   pondFade: {
     position: "absolute",
     top: 0,
@@ -313,7 +298,6 @@ const styles = StyleSheet.create({
     height: 240,
     zIndex: 2,
   },
-
   macoImage: {
     width: "78%",
     maxWidth: 320,
