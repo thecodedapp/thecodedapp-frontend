@@ -51,6 +51,7 @@ type Lesson = {
   image: ImageSourcePropType;
   locked?: boolean;
   completed?: boolean;
+  current?: boolean;
   side: "left" | "right";
   placeholder?: boolean;
   scale?: number;
@@ -265,10 +266,12 @@ function LessonLabel({
   title,
   locked,
   completed,
+  current,
 }: {
   title: string;
   locked?: boolean;
   completed?: boolean;
+  current?: boolean;
 }) {
   return (
     <View
@@ -276,13 +279,16 @@ function LessonLabel({
         styles.lessonLabel,
         locked && styles.lockedLabel,
         completed && styles.completedLabel,
+        current && styles.currentLabel,
       ]}
     >
+      {current && <Text style={styles.currentEyebrow}>UP NEXT</Text>}
       <Text
         style={[
           styles.lessonLabelText,
           locked && styles.lockedLabelText,
           completed && styles.completedLabelText,
+          current && styles.currentLabelText,
         ]}
       >
         {title}
@@ -301,6 +307,7 @@ function LessonNode({ lesson }: { lesson: Lesson }) {
       disabled={lesson.locked || !lessonDefinition}
       style={({ pressed }) => [
         styles.lessonRow,
+        lesson.current && styles.currentLessonRow,
         pressed && !lesson.locked && lessonDefinition && styles.lessonPressed,
       ]}
       onPress={() => {
@@ -323,6 +330,7 @@ function LessonNode({ lesson }: { lesson: Lesson }) {
             style={[
               styles.lilyPad,
               lesson.placeholder && styles.placeholderPad,
+              lesson.current && styles.currentLilyPad,
             ]}
             resizeMode="contain"
           />
@@ -342,6 +350,10 @@ function LessonNode({ lesson }: { lesson: Lesson }) {
               <View style={styles.completedBadge}>
                 <Ionicons name="checkmark" size={22} color={COLORS.green} />
               </View>
+            ) : lesson.current ? (
+              <View style={styles.currentBadge}>
+                <Text style={styles.currentBadgeText}>{lesson.id}</Text>
+              </View>
             ) : (
               <Text style={styles.padNumber}>{lesson.id}</Text>
             )}
@@ -360,6 +372,7 @@ function LessonNode({ lesson }: { lesson: Lesson }) {
             title={lesson.title}
             locked={lesson.locked}
             completed={lesson.completed}
+            current={lesson.current}
           />
         </View>
       )}
@@ -383,11 +396,13 @@ function CoursePath({
           lesson.id > highestUnlockedLesson ||
           !lessonExists;
         const completed = completedLessons.includes(lesson.id);
+        const current =
+          !locked && !completed && lesson.id === highestUnlockedLesson;
 
         return (
           <LessonNode
             key={lesson.id}
-            lesson={{ ...lesson, locked, completed }}
+            lesson={{ ...lesson, locked, completed, current }}
           />
         );
       })}
@@ -590,6 +605,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  currentLessonRow: {
+    zIndex: 2,
+  },
   lessonPressed: {
     transform: [{ scale: 0.97 }],
   },
@@ -607,6 +625,9 @@ const styles = StyleSheet.create({
   lilyPad: {
     width: 147,
     height: 128,
+  },
+  currentLilyPad: {
+    transform: [{ scale: 1.05 }],
   },
   placeholderPad: {
     opacity: 0.9,
@@ -631,6 +652,22 @@ const styles = StyleSheet.create({
       height: 2,
     },
     textShadowRadius: 2,
+  },
+  currentBadge: {
+    minWidth: 48,
+    height: 48,
+    paddingHorizontal: 10,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.96)",
+    borderWidth: 3,
+    borderColor: COLORS.green,
+  },
+  currentBadgeText: {
+    fontFamily: "Nunito_900Black",
+    fontSize: 21,
+    color: COLORS.green,
   },
   completedBadge: {
     width: 42,
@@ -680,5 +717,21 @@ const styles = StyleSheet.create({
   },
   completedLabelText: {
     color: COLORS.green,
+  },
+  currentLabel: {
+    borderWidth: 2,
+    borderColor: COLORS.green,
+    backgroundColor: "rgba(255,253,248,0.98)",
+  },
+  currentEyebrow: {
+    marginBottom: 2,
+    fontFamily: "Nunito_900Black",
+    fontSize: 8,
+    letterSpacing: 0.8,
+    color: COLORS.green,
+  },
+  currentLabelText: {
+    fontFamily: "Nunito_800ExtraBold",
+    color: COLORS.navy,
   },
 });
