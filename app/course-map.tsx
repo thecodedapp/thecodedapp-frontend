@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 
 import {
     Dimensions,
@@ -69,25 +70,27 @@ type Lesson = {
 const lessons: Lesson[] = [
   {
     id: 1,
-    title: "Variables\nand Data",
+    title: "What is\nCode?",
     image: ASSETS.lilyOpenLight,
     side: "left",
   },
   {
     id: 2,
-    title: "Conditionals",
+    title: "How Computers\nThink",
     image: ASSETS.lilyOpenishDark,
+    locked: true,
     side: "right",
   },
   {
     id: 3,
-    title: "Loops",
+    title: "What Can You\nBuild?",
     image: ASSETS.lilySlightlyClosedMedium,
+    locked: true,
     side: "left",
   },
   {
     id: 4,
-    title: "Functions",
+    title: "Programming\nLanguages",
     image: ASSETS.lilySlightlyClosedDark,
     locked: true,
     side: "right",
@@ -340,7 +343,9 @@ function LessonNode({ lesson }: { lesson: Lesson }) {
           styles.lessonPressed,
       ]}
       onPress={() => {
-        console.log(`Open lesson ${lesson.id}`);
+        if (lesson.id === 1) {
+          router.push("/lesson/what-is-code");
+        }
       }}
     >
       <View
