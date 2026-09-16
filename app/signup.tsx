@@ -55,7 +55,7 @@ export default function SignupScreen() {
         return;
       }
 
-      await saveToken(data.token);
+      await saveToken(data.token, data.user.id);
       router.replace({
         pathname: "/verify-email",
         params: { email: data.user.email },
