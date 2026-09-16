@@ -27,6 +27,7 @@ import {
 
 import { API_URL } from "../lib/api";
 import { deleteToken, getToken } from "../lib/authStorage";
+import { getGoalsCompleted } from "../lib/goalStorage";
 
 const COLORS = {
   cream: "#FFF8EE",
@@ -75,7 +76,8 @@ export default function WelcomeScreen() {
           const data = await response.json();
 
           if (data.user.emailVerified) {
-            router.replace("/goals");
+            const goalsCompleted = await getGoalsCompleted();
+            router.replace(goalsCompleted ? "/course-map" : "/goals");
           } else {
             router.replace({
               pathname: "/verify-email",
