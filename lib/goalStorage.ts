@@ -2,9 +2,9 @@ import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
 import { API_URL } from "./api";
-import { getToken } from "./authStorage";
+import { getToken, getUserId } from "./authStorage";
 
-const GOALS_KEY = "selectedGoals";
+const LEGACY_GOALS_KEY = "selectedGoals";
 const GOALS_COMPLETED_KEY = "goalsCompleted";
 
 const readValue = async (key: string) => {
@@ -12,7 +12,6 @@ const readValue = async (key: string) => {
     if (typeof window !== "undefined") {
       return window.localStorage.getItem(key);
     }
-
     return null;
   }
 
@@ -24,16 +23,19 @@ const writeValue = async (key: string, value: string) => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(key, value);
     }
-
     return;
   }
 
   await SecureStore.setItemAsync(key, value);
 };
 
-const readLocalGoals = async (): Promise<string[]> => {
-  const storedGoals = await readValue(GOALS_KEY);
+const getGoalsKey = async () => {
+  const userId = await getUserId();
+  return userId ? `${LEGACY_GOALS_KEY}:${userId}` : LEGACY_GOALS_KEY;
+};
 
+const readLocalGoals = async (): Promise<string[]> => {
+  const storedGoals = await readValue(await getGoalsKey());
   if (!storedGoals) return [];
 
   try {
@@ -47,16 +49,16 @@ const readLocalGoals = async (): Promise<string[]> => {
 };
 
 const saveLocalGoals = async (goals: string[]) => {
-  await writeValue(GOALS_KEY, JSON.stringify(goals));
+  await writeValue(await getGoalsKey(), JSON.stringify(goals));
   await writeValue(GOALS_COMPLETED_KEY, goals.length > 0 ? "true" : "false");
 };
 
 const pushGoalsToServer = async (goals: string[]) => {
   try {
     const token = await getToken();
-    if (!token) return;
+    if (!token) return false;
 
-    await fetch(`${API_URL}/progress`, {
+    const response = await fetch(`${API_URL}/progress`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -64,8 +66,16 @@ const pushGoalsToServer = async (goals: string[]) => {
       },
       body: JSON.stringify({ goals }),
     });
+
+    if (!response.ok) {
+      console.warn(`Could not sync goals yet: ${response.status}`);
+      return false;
+    }
+
+    return true;
   } catch (error) {
     console.warn("Could not sync goals yet:", error);
+    return false;
   }
 };
 
@@ -102,13 +112,15 @@ export const getSavedGoals = async (): Promise<string[]> => {
     getRemoteGoals(),
   ]);
 
-  if (remoteGoals && remoteGoals.length > 0) {
-    await saveLocalGoals(remoteGoals);
-    return remoteGoals;
-  }
+  if (remoteGoals !== null) {
+    if (remoteGoals.length > 0) {
+      await saveLocalGoals(remoteGoals);
+      return remoteGoals;
+    }
 
-  if (localGoals.length > 0 && remoteGoals?.length === 0) {
-    void pushGoalsToServer(localGoals);
+    if (localGoals.length > 0) {
+      void pushGoalsToServer(localGoals);
+    }
   }
 
   return localGoals;
