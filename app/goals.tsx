@@ -8,12 +8,13 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import MacoPrimaryButton from "../components/MacoPrimaryButton";
 import { deleteToken } from "../lib/authStorage";
+import { getSavedGoals, saveGoals } from "../lib/goalStorage";
 
 const COLORS = {
   cream: "#FFF8EE",
@@ -51,6 +52,7 @@ const goals = [
 
 export default function GoalsScreen() {
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const [loadingGoals, setLoadingGoals] = useState(true);
 
   const [fontsLoaded] = useFonts({
     Nunito_600SemiBold,
@@ -59,7 +61,17 @@ export default function GoalsScreen() {
     Nunito_900Black,
   });
 
-  if (!fontsLoaded) return null;
+  useEffect(() => {
+    const loadGoals = async () => {
+      const savedGoals = await getSavedGoals();
+      setSelectedGoals(savedGoals);
+      setLoadingGoals(false);
+    };
+
+    void loadGoals();
+  }, []);
+
+  if (!fontsLoaded || loadingGoals) return null;
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals((currentGoals) =>
@@ -67,6 +79,13 @@ export default function GoalsScreen() {
         ? currentGoals.filter((item) => item !== goal)
         : [...currentGoals, goal]
     );
+  };
+
+  const handleContinue = async () => {
+    if (selectedGoals.length === 0) return;
+
+    await saveGoals(selectedGoals);
+    router.replace("/course-map");
   };
 
   const handleLogout = async () => {
@@ -144,11 +163,7 @@ export default function GoalsScreen() {
             <View style={!canContinue ? styles.disabledButton : undefined}>
               <MacoPrimaryButton
                 label="Continue"
-                onPress={() => {
-                  if (canContinue) {
-                    router.replace("/course-map");
-                  }
-                }}
+                onPress={() => void handleContinue()}
                 width="100%"
                 height={60}
                 fontSize={19}
