@@ -6,6 +6,7 @@ import {
   useFonts,
 } from "@expo-google-fonts/nunito";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
@@ -147,6 +148,20 @@ export default function SignupScreen() {
             style={styles.pondBackground}
             resizeMode="cover"
           />
+
+          <LinearGradient
+            pointerEvents="none"
+            colors={[
+              COLORS.cream,
+              "rgba(255,248,238,0.95)",
+              "rgba(255,248,238,0.72)",
+              "rgba(255,248,238,0.35)",
+              "rgba(255,248,238,0)",
+            ]}
+            locations={[0, 0.18, 0.42, 0.7, 1]}
+            style={styles.pondFade}
+          />
+
           <Image
             source={require("../assets/images/happy-maco-on-phone.png")}
             style={styles.macoImage}
@@ -160,7 +175,7 @@ export default function SignupScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.pond },
-  scrollContent: { flexGrow: 1, backgroundColor: COLORS.cream },
+  scrollContent: { flexGrow: 1, backgroundColor: COLORS.pond },
   topSection: {
     backgroundColor: COLORS.cream,
     paddingHorizontal: 26,
@@ -258,13 +273,32 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   pondSection: {
-    height: 250,
+    flexGrow: 1,
+    minHeight: 340,
     position: "relative",
     overflow: "hidden",
     backgroundColor: COLORS.pond,
     alignItems: "center",
     justifyContent: "flex-end",
   },
-  pondBackground: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
-  macoImage: { width: "62%", maxWidth: 280, height: 215, marginBottom: -18 },
+  pondBackground: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+  },
+  pondFade: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 170,
+    zIndex: 1,
+  },
+  macoImage: {
+    width: "62%",
+    maxWidth: 280,
+    height: 215,
+    marginBottom: -18,
+    zIndex: 2,
+  },
 });
