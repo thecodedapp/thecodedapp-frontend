@@ -261,6 +261,150 @@ const LESSONS: LessonDefinition[] = [
       require("../assets/images/maco-jump.png"),
     ],
   },
+  {
+    number: 4,
+    id: "programming-languages",
+    title: "Programming Languages",
+    steps: [
+      {
+        type: "content",
+        title: "One idea, many languages.",
+        body:
+          "Programming languages are different ways of writing instructions for computers. The syntax changes, but many core ideas—variables, conditions, loops, and functions—show up again and again.",
+        callout: "Learning programming concepts makes learning new languages much easier later.",
+      },
+      {
+        type: "cards",
+        title: "Languages have different strengths.",
+        body: "Developers choose tools based on what they are building.",
+        cards: [
+          { emoji: "🌐", label: "JavaScript / TypeScript\nWeb + apps" },
+          { emoji: "🐍", label: "Python\nAutomation + data + AI" },
+          { emoji: "#️⃣", label: "C#\nApps + games + backend" },
+          { emoji: "☕", label: "Java\nApps + backend" },
+        ],
+        footer:
+          "There is no single best language for every job. The right choice depends on the project and ecosystem.",
+      },
+      {
+        type: "content",
+        title: "Not every code-looking language does the same job.",
+        body:
+          "HTML describes the structure of a webpage, while CSS controls its appearance. JavaScript adds programming behavior and logic.",
+        bullets: [
+          "HTML → structure and content",
+          "CSS → styling and layout",
+          "JavaScript → behavior and logic",
+        ],
+      },
+      {
+        type: "quiz",
+        title: "Tiny challenge",
+        question: "You want to add interactive behavior to a webpage. Which option is the programming language here?",
+        options: [
+          "JavaScript",
+          "HTML",
+          "CSS",
+        ],
+        correctIndex: 0,
+        successText: "Yep! JavaScript adds programming logic and interactivity to the web.",
+        retryText: "Not quite. HTML structures the page and CSS styles it; JavaScript handles programming behavior.",
+      },
+      {
+        type: "content",
+        title: "Your first language is not your last.",
+        body:
+          "Developers often learn several languages over time. Once you understand the fundamentals, switching languages becomes less about relearning programming and more about learning new syntax and tools.",
+        callout: "Focus on concepts first. Syntax comes with practice.",
+      },
+      {
+        type: "complete",
+        title: "You now know why programming has so many languages. 🌎",
+        body:
+          "Different languages fit different jobs, but the core problem-solving skills you are learning transfer between them.",
+      },
+    ],
+    macoByStep: [
+      require("../assets/images/maco-thinking.png"),
+      require("../assets/images/maco-happy-with-sparkles.png"),
+      require("../assets/images/maco-smiling-looking-up-to-the-side.png"),
+      require("../assets/images/maco-gleeful.png"),
+      require("../assets/images/maco-happy-with-heart-halo.png"),
+      require("../assets/images/maco-jump.png"),
+    ],
+  },
+  {
+    number: 5,
+    id: "build-a-project",
+    title: "Build a Project",
+    steps: [
+      {
+        type: "content",
+        title: "Projects start with a tiny goal.",
+        body:
+          "Before writing code, decide the smallest useful thing your project should do. A clear first goal keeps you from trying to build everything at once.",
+        callout: "Small, testable goals make projects easier to finish.",
+      },
+      {
+        type: "content",
+        title: "Plan the pieces.",
+        body:
+          "Imagine a tiny to-do app. You can break it into simple pieces before you code anything.",
+        bullets: [
+          "Show a list of tasks",
+          "Add a new task",
+          "Mark a task complete",
+          "Save the tasks",
+        ],
+      },
+      {
+        type: "cards",
+        title: "Build in a loop.",
+        body: "Good projects grow through a repeatable cycle.",
+        cards: [
+          { emoji: "🧩", label: "Pick one small feature" },
+          { emoji: "⌨️", label: "Build it" },
+          { emoji: "🧪", label: "Test it" },
+          { emoji: "🔧", label: "Fix and improve" },
+        ],
+        footer:
+          "Then repeat. You do not need the entire project to be perfect before testing the first piece.",
+      },
+      {
+        type: "quiz",
+        title: "Tiny challenge",
+        question: "Your new feature does not work. What is the best next move?",
+        options: [
+          "Check the error, isolate the problem, and test a small fix",
+          "Rewrite the entire project immediately",
+        ],
+        correctIndex: 0,
+        successText: "Exactly! Debugging works best when you narrow the problem down and test one change at a time.",
+        retryText: "That usually creates more problems. Start by isolating the bug and testing a small fix.",
+      },
+      {
+        type: "content",
+        title: "Finished beats imaginary.",
+        body:
+          "A small working project teaches you more than a huge idea that never gets built. Every finished project gives you practice planning, coding, debugging, and improving software.",
+        callout: "Build small → finish → learn → build bigger.",
+      },
+      {
+        type: "complete",
+        title: "You finished Maco's intro path! 🎉",
+        body:
+          "You now understand what code is, how computers follow logic, what you can build, why languages differ, and how projects come together. Next, you're ready for hands-on coding fundamentals.",
+      },
+    ],
+    macoByStep: [
+      require("../assets/images/maco-thinking.png"),
+      require("../assets/images/maco-smiling-looking-up-to-the-side.png"),
+      require("../assets/images/maco-happy-with-sparkles.png"),
+      require("../assets/images/maco-gleeful.png"),
+      require("../assets/images/maco-happy-with-heart-halo.png"),
+      require("../assets/images/maco-jump.png"),
+    ],
+  },
 ];
 
 export const getLessonById = (id?: string) =>
