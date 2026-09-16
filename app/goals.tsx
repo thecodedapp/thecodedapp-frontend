@@ -184,7 +184,7 @@ export default function GoalsScreen() {
           />
 
           <Image
-            source={require("../assets/images/happy-maco-on-phone.png")}
+            source={require("../assets/images/maco-thinking.png")}
             style={styles.macoImage}
             resizeMode="contain"
           />
@@ -197,7 +197,7 @@ export default function GoalsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.pond,
+    backgroundColor: COLORS.cream,
   },
   scrollContent: {
     flexGrow: 1,
@@ -341,10 +341,10 @@ const styles = StyleSheet.create({
   },
   macoImage: {
     position: "absolute",
-    top: 74,
+    top: -33,
     width: "62%",
     maxWidth: 285,
     height: 220,
-    zIndex: 2,
+    zIndex: 10,
   },
 });
