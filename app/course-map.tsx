@@ -15,6 +15,7 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { deleteToken } from "../lib/authStorage";
 import { getLessonByNumber } from "../lib/lessonCatalog";
 import {
   getCompletedLessons,
@@ -225,10 +226,21 @@ function BottomFade() {
   );
 }
 
-function Header() {
+function Header({ onLogout }: { onLogout: () => void }) {
   return (
     <View style={styles.header}>
-      <View style={styles.headerSpacer} />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Log out"
+        onPress={onLogout}
+        style={({ pressed }) => [
+          styles.logoutButton,
+          pressed && styles.logoutButtonPressed,
+        ]}
+      >
+        <Ionicons name="log-out-outline" size={17} color={COLORS.green} />
+        <Text style={styles.logoutText}>Log out</Text>
+      </Pressable>
       <Text style={styles.logo}>maco</Text>
       <View style={styles.headerRight}>
         <View style={styles.streak}>
@@ -438,6 +450,11 @@ export default function CourseMap() {
     }, [])
   );
 
+  const handleLogout = async () => {
+    await deleteToken();
+    router.replace("/auth");
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <View style={styles.screen}>
@@ -446,7 +463,7 @@ export default function CourseMap() {
           contentContainerStyle={styles.scrollContent}
         >
           <PondBackground />
-          <Header />
+          <Header onLogout={() => void handleLogout()} />
           <CourseBanner />
           <CoursePath
             highestUnlockedLesson={highestUnlockedLesson}
@@ -510,8 +527,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  headerSpacer: {
-    width: 70,
+  logoutButton: {
+    width: 82,
+    minHeight: 34,
+    paddingHorizontal: 8,
+    borderRadius: 17,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    backgroundColor: "rgba(255,255,255,0.74)",
+  },
+  logoutButtonPressed: {
+    opacity: 0.72,
+  },
+  logoutText: {
+    fontFamily: "Nunito_700Bold",
+    fontSize: 12,
+    color: COLORS.green,
   },
   logo: {
     fontFamily: "Nunito_900Black",
@@ -520,7 +553,7 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
   },
   headerRight: {
-    width: 78,
+    width: 82,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
