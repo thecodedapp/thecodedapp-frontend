@@ -116,7 +116,7 @@ export default function AuthScreen() {
         />
 
         <Image
-          source={require("../assets/images/maco-jump.jpeg")}
+          source={require("../assets/images/maco-jump.png")}
           style={styles.macoImage}
           resizeMode="contain"
         />
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: "85%",
+    height: "100%",
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-end",
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   macoImage: {
     width: "78%",
     maxWidth: 320,
-    height: 250,
-    marginBottom: -18,
+    height: 290,
+    marginBottom: 38,
   },
 });
