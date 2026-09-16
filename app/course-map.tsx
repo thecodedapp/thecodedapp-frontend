@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
 
 import {
     Dimensions,
@@ -14,6 +16,7 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getHighestUnlockedLesson } from "../lib/lessonProgress";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -78,28 +81,24 @@ const lessons: Lesson[] = [
     id: 2,
     title: "How Computers\nThink",
     image: ASSETS.lilyOpenishDark,
-    locked: true,
     side: "right",
   },
   {
     id: 3,
     title: "What Can You\nBuild?",
     image: ASSETS.lilySlightlyClosedMedium,
-    locked: true,
     side: "left",
   },
   {
     id: 4,
     title: "Programming\nLanguages",
     image: ASSETS.lilySlightlyClosedDark,
-    locked: true,
     side: "right",
   },
   {
     id: 5,
     title: "Build a Project",
     image: ASSETS.lilyClosedDark,
-    locked: true,
     side: "left",
   },
 
@@ -410,20 +409,48 @@ function LessonNode({ lesson }: { lesson: Lesson }) {
   );
 }
 
-function CoursePath() {
+function CoursePath({ highestUnlockedLesson }: { highestUnlockedLesson: number }) {
   return (
     <View style={styles.path}>
-      {lessons.map((lesson) => (
-        <LessonNode
-          key={lesson.id}
-          lesson={lesson}
-        />
-      ))}
+      {lessons.map((lesson) => {
+        const locked = lesson.placeholder
+          ? true
+          : lesson.id > highestUnlockedLesson;
+
+        return (
+          <LessonNode
+            key={lesson.id}
+            lesson={{ ...lesson, locked }}
+          />
+        );
+      })}
     </View>
   );
 }
 
 export default function CourseMap() {
+  const [highestUnlockedLesson, setHighestUnlockedLesson] = useState(1);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const loadProgress = async () => {
+        const unlockedLesson = await getHighestUnlockedLesson();
+
+        if (isActive) {
+          setHighestUnlockedLesson(unlockedLesson);
+        }
+      };
+
+      void loadProgress();
+
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
+
   return (
     <SafeAreaView
       style={styles.safeArea}
@@ -442,7 +469,7 @@ export default function CourseMap() {
 
           <CourseBanner />
 
-          <CoursePath />
+          <CoursePath highestUnlockedLesson={highestUnlockedLesson} />
 
           <BottomFade />
         </ScrollView>
