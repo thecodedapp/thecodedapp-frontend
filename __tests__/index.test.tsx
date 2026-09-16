@@ -3,6 +3,7 @@ import { render, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
 import WelcomeScreen from "../app/index";
 import { deleteToken, getToken } from "../lib/authStorage";
+import { getGoalsCompleted } from "../lib/goalStorage";
 
 jest.mock("expo-router", () => ({
   router: {
@@ -11,18 +12,31 @@ jest.mock("expo-router", () => ({
   },
 }));
 
+jest.mock("react-native-safe-area-context", () => ({
+  SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));
+
 jest.mock("../lib/authStorage", () => ({
   getToken: jest.fn(),
   deleteToken: jest.fn(),
 }));
 
+jest.mock("../lib/goalStorage", () => ({
+  getGoalsCompleted: jest.fn(),
+}));
+
 const fetchMock = jest.fn<typeof fetch>();
 const getTokenMock = getToken as jest.MockedFunction<typeof getToken>;
+const getGoalsCompletedMock = getGoalsCompleted as jest.MockedFunction<
+  typeof getGoalsCompleted
+>;
 
 describe("WelcomeScreen auth bootstrap", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     globalThis.fetch = fetchMock as unknown as typeof globalThis.fetch;
+    getGoalsCompletedMock.mockResolvedValue(false);
   });
 
   it("routes a verified saved session to goals", async () => {
@@ -40,6 +54,23 @@ describe("WelcomeScreen auth bootstrap", () => {
       expect(router.replace).toHaveBeenCalledWith("/goals");
     });
     expect(deleteToken).not.toHaveBeenCalled();
+  });
+
+  it("routes a verified saved session with goals to the course map", async () => {
+    getTokenMock.mockResolvedValue("saved-token");
+    getGoalsCompletedMock.mockResolvedValue(true);
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        user: { email: "user@example.com", emailVerified: true },
+      }),
+    } as unknown as Response);
+
+    render(<WelcomeScreen />);
+
+    await waitFor(() => {
+      expect(router.replace).toHaveBeenCalledWith("/course-map");
+    });
   });
 
   it("routes an unverified saved session to email verification", async () => {
