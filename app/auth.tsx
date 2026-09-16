@@ -23,6 +23,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MacoPrimaryButton from "../components/MacoPrimaryButton";
 import { API_URL } from "../lib/api";
 import { saveToken } from "../lib/authStorage";
+import { getGoalsCompleted } from "../lib/goalStorage";
 
 const COLORS = {
   cream: "#FFF8EE",
@@ -77,7 +78,8 @@ export default function AuthScreen() {
       await saveToken(data.token);
 
       if (data.user.emailVerified) {
-        router.replace("/goals");
+        const goalsCompleted = await getGoalsCompleted();
+        router.replace(goalsCompleted ? "/course-map" : "/goals");
       } else {
         router.replace({
           pathname: "/verify-email",
