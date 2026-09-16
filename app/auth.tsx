@@ -101,7 +101,6 @@ export default function AuthScreen() {
         style={styles.pondSection}
         imageStyle={styles.pondBackgroundImage}
         resizeMode="cover"
-        pointerEvents="none"
       >
         <LinearGradient
           pointerEvents="none"
