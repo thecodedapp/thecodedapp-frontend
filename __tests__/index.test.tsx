@@ -101,7 +101,7 @@ describe("WelcomeScreen auth bootstrap", () => {
 
     const { findByText } = render(<WelcomeScreen />);
 
-    expect(await findByText("Start learning")).toBeTruthy();
+    expect(await findByText("Get Started")).toBeTruthy();
     expect(deleteToken).toHaveBeenCalledTimes(1);
   });
 
@@ -111,7 +111,7 @@ describe("WelcomeScreen auth bootstrap", () => {
 
     const { findByText } = render(<WelcomeScreen />);
 
-    expect(await findByText("Start learning")).toBeTruthy();
+    expect(await findByText("Get Started")).toBeTruthy();
     expect(deleteToken).not.toHaveBeenCalled();
   });
 });
