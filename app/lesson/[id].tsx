@@ -140,10 +140,20 @@ const MACO_BY_STEP: ImageSourcePropType[] = [
   require("../../assets/images/maco-jump.png"),
 ];
 
-function MacoCompanion({ source, centered = false }: { source: ImageSourcePropType; centered?: boolean }) {
+function MacoCompanion({
+  source,
+  centered = false,
+}: {
+  source: ImageSourcePropType;
+  centered?: boolean;
+}) {
   return (
-    <View style={[styles.macoWrap, centered && styles.macoWrapCentered]}>
-      <Image source={source} style={[styles.macoImage, centered && styles.macoImageLarge]} resizeMode="contain" />
+    <View style={centered ? styles.macoWrapCentered : styles.macoWrap}>
+      <Image
+        source={source}
+        style={[styles.macoImage, centered && styles.macoImageLarge]}
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -217,8 +227,9 @@ export default function LessonScreen() {
         >
           {step.type === "content" && (
             <View style={styles.lessonCard}>
-              <Text style={styles.stepTitle}>{step.title}</Text>
-              <Text style={styles.bodyText}>{step.body}</Text>
+              <MacoCompanion source={macoSource} />
+              <Text style={[styles.stepTitle, styles.copyWithMaco]}>{step.title}</Text>
+              <Text style={[styles.bodyText, styles.copyWithMaco]}>{step.body}</Text>
 
               {step.callout && (
                 <View style={styles.callout}>
@@ -237,15 +248,14 @@ export default function LessonScreen() {
                   ))}
                 </View>
               )}
-
-              <MacoCompanion source={macoSource} />
             </View>
           )}
 
           {step.type === "quiz" && (
             <View style={styles.lessonCard}>
-              <Text style={styles.stepTitle}>{step.title}</Text>
-              <Text style={styles.bodyText}>{step.question}</Text>
+              <MacoCompanion source={macoSource} />
+              <Text style={[styles.stepTitle, styles.copyWithMaco]}>{step.title}</Text>
+              <Text style={[styles.bodyText, styles.copyWithMaco]}>{step.question}</Text>
 
               <View style={styles.optionsList}>
                 {step.options.map((option, index) => {
@@ -291,15 +301,14 @@ export default function LessonScreen() {
                   </Text>
                 </View>
               )}
-
-              <MacoCompanion source={macoSource} />
             </View>
           )}
 
           {step.type === "cards" && (
             <View style={styles.lessonCard}>
-              <Text style={styles.stepTitle}>{step.title}</Text>
-              <Text style={styles.bodyText}>{step.body}</Text>
+              <MacoCompanion source={macoSource} />
+              <Text style={[styles.stepTitle, styles.copyWithMaco]}>{step.title}</Text>
+              <Text style={[styles.bodyText, styles.copyWithMaco]}>{step.body}</Text>
 
               <View style={styles.cardsGrid}>
                 {step.cards.map((card) => (
@@ -311,7 +320,6 @@ export default function LessonScreen() {
               </View>
 
               <Text style={styles.footerText}>{step.footer}</Text>
-              <MacoCompanion source={macoSource} />
             </View>
           )}
 
@@ -427,12 +435,16 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: COLORS.border,
     backgroundColor: "#FFFDF8",
+    position: "relative",
   },
   stepTitle: {
     fontFamily: "Nunito_900Black",
     fontSize: 30,
     lineHeight: 36,
     color: COLORS.navy,
+  },
+  copyWithMaco: {
+    paddingRight: 112,
   },
   bodyText: {
     marginTop: 14,
@@ -579,16 +591,19 @@ const styles = StyleSheet.create({
     color: COLORS.muted,
   },
   macoWrap: {
-    marginTop: "auto",
-    paddingTop: 18,
-    alignItems: "flex-end",
+    position: "absolute",
+    top: 14,
+    right: 16,
+    zIndex: 2,
   },
   macoWrapCentered: {
+    marginTop: "auto",
+    paddingTop: 18,
     alignItems: "center",
   },
   macoImage: {
-    width: 132,
-    height: 132,
+    width: 104,
+    height: 104,
   },
   macoImageLarge: {
     width: 170,
