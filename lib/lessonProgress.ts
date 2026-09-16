@@ -2,17 +2,16 @@ import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
 import { API_URL } from "./api";
-import { getToken } from "./authStorage";
+import { getToken, getUserId } from "./authStorage";
 
-const HIGHEST_UNLOCKED_LESSON_KEY = "highestUnlockedLesson";
-const COMPLETED_LESSONS_KEY = "completedLessons";
+const LEGACY_HIGHEST_UNLOCKED_LESSON_KEY = "highestUnlockedLesson";
+const LEGACY_COMPLETED_LESSONS_KEY = "completedLessons";
 
 const readValue = async (key: string) => {
   if (Platform.OS === "web") {
     if (typeof window !== "undefined") {
       return window.localStorage.getItem(key);
     }
-
     return null;
   }
 
@@ -24,15 +23,28 @@ const writeValue = async (key: string, value: string) => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(key, value);
     }
-
     return;
   }
 
   await SecureStore.setItemAsync(key, value);
 };
 
+const getScopedKeys = async () => {
+  const userId = await getUserId();
+
+  return {
+    highest: userId
+      ? `${LEGACY_HIGHEST_UNLOCKED_LESSON_KEY}:${userId}`
+      : LEGACY_HIGHEST_UNLOCKED_LESSON_KEY,
+    completed: userId
+      ? `${LEGACY_COMPLETED_LESSONS_KEY}:${userId}`
+      : LEGACY_COMPLETED_LESSONS_KEY,
+  };
+};
+
 const getLocalHighestUnlockedLesson = async () => {
-  const storedValue = await readValue(HIGHEST_UNLOCKED_LESSON_KEY);
+  const { highest } = await getScopedKeys();
+  const storedValue = await readValue(highest);
   const parsedValue = Number(storedValue);
 
   if (!Number.isFinite(parsedValue) || parsedValue < 1) return 1;
@@ -40,7 +52,8 @@ const getLocalHighestUnlockedLesson = async () => {
 };
 
 const getLocalCompletedLessons = async () => {
-  const storedValue = await readValue(COMPLETED_LESSONS_KEY);
+  const { completed } = await getScopedKeys();
+  const storedValue = await readValue(completed);
 
   if (storedValue) {
     try {
@@ -66,9 +79,11 @@ const saveLocalProgress = async (
   highestUnlockedLesson: number,
   completedLessons: number[]
 ) => {
+  const { highest, completed } = await getScopedKeys();
+
   await Promise.all([
-    writeValue(HIGHEST_UNLOCKED_LESSON_KEY, String(highestUnlockedLesson)),
-    writeValue(COMPLETED_LESSONS_KEY, JSON.stringify(completedLessons)),
+    writeValue(highest, String(highestUnlockedLesson)),
+    writeValue(completed, JSON.stringify(completedLessons)),
   ]);
 };
 
@@ -110,9 +125,9 @@ const pushProgressToServer = async (
 ) => {
   try {
     const token = await getToken();
-    if (!token) return;
+    if (!token) return false;
 
-    await fetch(`${API_URL}/progress`, {
+    const response = await fetch(`${API_URL}/progress`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -123,12 +138,20 @@ const pushProgressToServer = async (
         completedLessons,
       }),
     });
+
+    if (!response.ok) {
+      console.warn(`Could not sync lesson progress yet: ${response.status}`);
+      return false;
+    }
+
+    return true;
   } catch (error) {
     console.warn("Could not sync lesson progress yet:", error);
+    return false;
   }
 };
 
-const getMergedProgress = async () => {
+export const getLessonProgress = async () => {
   const [localHighest, localCompleted, remote] = await Promise.all([
     getLocalHighestUnlockedLesson(),
     getLocalCompletedLessons(),
@@ -136,10 +159,7 @@ const getMergedProgress = async () => {
   ]);
 
   const completedLessons = Array.from(
-    new Set([
-      ...localCompleted,
-      ...(remote?.completedLessons ?? []),
-    ])
+    new Set([...localCompleted, ...(remote?.completedLessons ?? [])])
   ).sort((a, b) => a - b);
 
   const highestUnlockedLesson = Math.max(
@@ -163,17 +183,17 @@ const getMergedProgress = async () => {
 };
 
 export const getHighestUnlockedLesson = async () => {
-  const progress = await getMergedProgress();
+  const progress = await getLessonProgress();
   return progress.highestUnlockedLesson;
 };
 
 export const getCompletedLessons = async () => {
-  const progress = await getMergedProgress();
+  const progress = await getLessonProgress();
   return progress.completedLessons;
 };
 
 export const completeLesson = async (lessonNumber: number) => {
-  const { highestUnlockedLesson, completedLessons } = await getMergedProgress();
+  const { highestUnlockedLesson, completedLessons } = await getLessonProgress();
   const nextCompletedLessons = completedLessons.includes(lessonNumber)
     ? completedLessons
     : [...completedLessons, lessonNumber].sort((a, b) => a - b);
