@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import {
   Nunito_300Light,
   Nunito_400Regular,
@@ -8,6 +7,8 @@ import {
   Nunito_900Black,
   useFonts,
 } from "@expo-google-fonts/nunito";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -134,18 +135,32 @@ export default function WelcomeScreen() {
 
         <View style={styles.pondSection}>
           <Image
-            source={require("../assets/images/pond-background-step1.jpg")}
+            source={require("../assets/images/pond-background-fade.png")}
             style={styles.pondBackground}
             resizeMode="cover"
           />
 
-          <View style={styles.pondGlow} />
-
-          <Image
-            source={require("../assets/images/happy-maco-on-phone.png")}
-            style={styles.macoHero}
-            resizeMode="contain"
+          <LinearGradient
+            pointerEvents="none"
+            colors={[
+              COLORS.cream,
+              "rgba(255,248,238,0.96)",
+              "rgba(255,248,238,0.78)",
+              "rgba(255,248,238,0.46)",
+              "rgba(255,248,238,0.16)",
+              "rgba(255,248,238,0)",
+            ]}
+            locations={[0, 0.14, 0.32, 0.54, 0.76, 1]}
+            style={styles.pondTopFade}
           />
+
+          <View style={styles.macoWrapper}>
+            <Image
+              source={require("../assets/images/happy-maco-on-phone.png")}
+              style={styles.macoHero}
+              resizeMode="contain"
+            />
+          </View>
 
           <View style={styles.actions}>
             <Pressable
@@ -220,7 +235,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 24,
     paddingHorizontal: 24,
-    paddingBottom: 18,
+    paddingBottom: 8,
     backgroundColor: COLORS.cream,
     zIndex: 2,
   },
@@ -289,7 +304,7 @@ const styles = StyleSheet.create({
 
   pondSection: {
     flex: 1,
-    minHeight: 470,
+    minHeight: 500,
     position: "relative",
     alignItems: "center",
     justifyContent: "flex-end",
@@ -303,30 +318,37 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 
-  pondGlow: {
+  pondTopFade: {
     position: "absolute",
-    top: -80,
-    left: -40,
-    right: -40,
-    height: 170,
-    borderRadius: 100,
-    backgroundColor: "rgba(255,248,238,0.72)",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 190,
+    zIndex: 2,
+  },
+
+  macoWrapper: {
+    position: "absolute",
+    top: 12,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 3,
   },
 
   macoHero: {
-    position: "absolute",
-    top: 6,
     width: "72%",
     maxWidth: 310,
-    height: 235,
+    height: 230,
   },
 
   actions: {
     width: "100%",
     paddingHorizontal: 28,
-    paddingBottom: 56,
+    paddingBottom: 58,
     gap: 14,
-    zIndex: 3,
+    zIndex: 4,
   },
 
   primaryButton: {
@@ -382,6 +404,7 @@ const styles = StyleSheet.create({
   bottomMessage: {
     position: "absolute",
     bottom: 16,
+    zIndex: 4,
     fontFamily: "Nunito_700Bold",
     fontSize: 13,
     color: "rgba(18,59,69,0.72)",
