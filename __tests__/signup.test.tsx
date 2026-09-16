@@ -24,12 +24,12 @@ describe("SignupScreen", () => {
     globalThis.fetch = fetchMock as unknown as typeof globalThis.fetch;
   });
 
-  it("saves the token and routes to verification after signup", async () => {
+  it("saves the token with account identity and routes to verification after signup", async () => {
     fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
         token: "signup-token",
-        user: { email: "newuser@example.com" },
+        user: { id: "user-2", email: "newuser@example.com" },
       }),
     } as unknown as Response);
 
@@ -46,7 +46,7 @@ describe("SignupScreen", () => {
     fireEvent.press(getByText("Create account"));
 
     await waitFor(() => {
-      expect(saveToken).toHaveBeenCalledWith("signup-token");
+      expect(saveToken).toHaveBeenCalledWith("signup-token", "user-2");
       expect(router.replace).toHaveBeenCalledWith({
         pathname: "/verify-email",
         params: { email: "newuser@example.com" },
