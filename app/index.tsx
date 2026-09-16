@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import {
   Nunito_300Light,
   Nunito_400Regular,
@@ -8,6 +7,7 @@ import {
   Nunito_900Black,
   useFonts,
 } from "@expo-google-fonts/nunito";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -134,7 +134,7 @@ export default function WelcomeScreen() {
 
         <View style={styles.pondSection}>
           <Image
-            source={require("../assets/images/pond-background-step1.jpg")}
+            source={require("../assets/images/pond-background-fade.png")}
             style={styles.pondBackground}
             resizeMode="cover"
           />
