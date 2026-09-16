@@ -7,6 +7,7 @@ import {
   Nunito_900Black,
   useFonts,
 } from "@expo-google-fonts/nunito";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -155,6 +156,19 @@ export default function AuthScreen() {
         imageStyle={styles.pondBackgroundImage}
         resizeMode="cover"
       >
+        <LinearGradient
+          pointerEvents="none"
+          colors={[
+            COLORS.cream,
+            "rgba(255,248,238,0.94)",
+            "rgba(255,248,238,0.72)",
+            "rgba(255,248,238,0.38)",
+            "rgba(255,248,238,0)",
+          ]}
+          locations={[0, 0.18, 0.42, 0.7, 1]}
+          style={styles.pondFade}
+        />
+
         <Image
           source={require("../assets/images/maco-jump.jpeg")}
           style={styles.macoImage}
@@ -270,7 +284,7 @@ const styles = StyleSheet.create({
 
   pondSection: {
     flex: 1,
-    minHeight: 240,
+    minHeight: 340,
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-end",
@@ -281,6 +295,15 @@ const styles = StyleSheet.create({
   pondBackgroundImage: {
     width: "100%",
     height: "100%",
+  },
+
+  pondFade: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 150,
+    zIndex: 2,
   },
 
   macoImage: {
