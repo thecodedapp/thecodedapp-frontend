@@ -32,12 +32,13 @@ describe("AuthScreen", () => {
     getGoalsCompletedMock.mockResolvedValue(false);
   });
 
-  it("logs in a verified user, saves the token, and routes to goals", async () => {
+  it("logs in a verified user, saves account identity, and routes to goals", async () => {
     fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
         token: "test-token",
         user: {
+          id: "user-1",
           email: "user@example.com",
           emailVerified: true,
         },
@@ -64,7 +65,7 @@ describe("AuthScreen", () => {
           }),
         })
       );
-      expect(saveToken).toHaveBeenCalledWith("test-token");
+      expect(saveToken).toHaveBeenCalledWith("test-token", "user-1");
       expect(router.replace).toHaveBeenCalledWith("/goals");
     });
   });
@@ -76,6 +77,7 @@ describe("AuthScreen", () => {
       json: async () => ({
         token: "test-token",
         user: {
+          id: "user-1",
           email: "user@example.com",
           emailVerified: true,
         },
@@ -102,6 +104,7 @@ describe("AuthScreen", () => {
       json: async () => ({
         token: "test-token",
         user: {
+          id: "user-1",
           email: "user@example.com",
           emailVerified: false,
         },
@@ -118,7 +121,7 @@ describe("AuthScreen", () => {
     fireEvent.press(getByText("Log In"));
 
     await waitFor(() => {
-      expect(saveToken).toHaveBeenCalledWith("test-token");
+      expect(saveToken).toHaveBeenCalledWith("test-token", "user-1");
       expect(router.replace).toHaveBeenCalledWith({
         pathname: "/verify-email",
         params: {
