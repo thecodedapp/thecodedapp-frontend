@@ -13,6 +13,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Image,
+  ImageBackground,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -138,13 +139,12 @@ export default function WelcomeScreen() {
           </View>
         </View>
 
-        <View style={styles.pondSection}>
-          <Image
-            source={require("../assets/images/pond-background-fade.png")}
-            style={styles.pondBackground}
-            resizeMode="cover"
-          />
-
+        <ImageBackground
+          source={require("../assets/images/pond-background-fade.png")}
+          style={styles.pondSection}
+          imageStyle={styles.pondBackgroundImage}
+          resizeMode="cover"
+        >
           <LinearGradient
             pointerEvents="none"
             colors={[
@@ -203,7 +203,7 @@ export default function WelcomeScreen() {
           >
             Knowledge grows happier here. 💚
           </Text>
-        </View>
+        </ImageBackground>
       </ScrollView>
     </SafeAreaView>
   );
@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
   pondSection: {
     flex: 1,
     minHeight: 470,
+    width: "100%",
     position: "relative",
     alignItems: "center",
     justifyContent: "flex-end",
@@ -325,8 +326,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.pond,
   },
 
-  pondBackground: {
-    ...StyleSheet.absoluteFillObject,
+  pondBackgroundImage: {
     width: "100%",
     height: "100%",
   },
