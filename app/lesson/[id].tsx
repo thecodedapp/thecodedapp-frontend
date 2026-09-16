@@ -132,7 +132,7 @@ const WHAT_IS_CODE_STEPS: LessonStep[] = [
 ];
 
 const MACO_BY_STEP: ImageSourcePropType[] = [
-  require("../../assets/images/maco-happy-hands-to-side.png"),
+  require("../../assets/images/maco-thinking.png"),
   require("../../assets/images/maco-smiling-looking-up-to-the-side.png"),
   require("../../assets/images/maco-thinking.png"),
   require("../../assets/images/maco-gleeful.png"),
