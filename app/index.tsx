@@ -108,6 +108,7 @@ export default function WelcomeScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="never"
       >
         <View style={styles.topSection}>
           <Text style={styles.wordmark}>maco</Text>
@@ -235,12 +236,12 @@ const styles = StyleSheet.create({
 
   scrollView: {
     flex: 1,
-    backgroundColor: COLORS.cream,
+    backgroundColor: COLORS.pond,
   },
 
   scrollContent: {
     flexGrow: 1,
-    backgroundColor: COLORS.cream,
+    backgroundColor: COLORS.pond,
   },
 
   topSection: {
