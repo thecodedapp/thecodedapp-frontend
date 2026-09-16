@@ -94,6 +94,34 @@ export default function AuthScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
+      <ImageBackground
+        source={require("../assets/images/pond-background-fade.png")}
+        style={styles.pondSection}
+        imageStyle={styles.pondBackgroundImage}
+        resizeMode="cover"
+        pointerEvents="none"
+      >
+        <LinearGradient
+          pointerEvents="none"
+          colors={[
+            COLORS.cream,
+            "rgba(255,248,238,0.96)",
+            "rgba(255,248,238,0.82)",
+            "rgba(255,248,238,0.58)",
+            "rgba(255,248,238,0.28)",
+            "rgba(255,248,238,0)",
+          ]}
+          locations={[0, 0.14, 0.3, 0.5, 0.72, 1]}
+          style={styles.pondFade}
+        />
+
+        <Image
+          source={require("../assets/images/maco-jump.jpeg")}
+          style={styles.macoImage}
+          resizeMode="contain"
+        />
+      </ImageBackground>
+
       <View style={styles.topSection}>
         <Text style={styles.wordmark}>maco</Text>
         <Text style={styles.kicker}>Good to see you again</Text>
@@ -149,32 +177,6 @@ export default function AuthScreen() {
           </Text>
         </View>
       </View>
-
-      <ImageBackground
-        source={require("../assets/images/pond-background-fade.png")}
-        style={styles.pondSection}
-        imageStyle={styles.pondBackgroundImage}
-        resizeMode="cover"
-      >
-        <LinearGradient
-          pointerEvents="none"
-          colors={[
-            COLORS.cream,
-            "rgba(255,248,238,0.94)",
-            "rgba(255,248,238,0.72)",
-            "rgba(255,248,238,0.38)",
-            "rgba(255,248,238,0)",
-          ]}
-          locations={[0, 0.18, 0.42, 0.7, 1]}
-          style={styles.pondFade}
-        />
-
-        <Image
-          source={require("../assets/images/maco-jump.jpeg")}
-          style={styles.macoImage}
-          resizeMode="contain"
-        />
-      </ImageBackground>
     </SafeAreaView>
   );
 }
@@ -183,6 +185,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.cream,
+    overflow: "hidden",
   },
 
   topSection: {
@@ -190,7 +193,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingTop: 28,
     paddingBottom: 24,
-    backgroundColor: COLORS.cream,
+    backgroundColor: "transparent",
   },
 
   wordmark: {
@@ -283,13 +286,17 @@ const styles = StyleSheet.create({
   },
 
   pondSection: {
-    flex: 1,
-    minHeight: 340,
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "68%",
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-end",
     overflow: "hidden",
     backgroundColor: COLORS.pond,
+    zIndex: 0,
   },
 
   pondBackgroundImage: {
@@ -302,7 +309,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 150,
+    height: 190,
     zIndex: 2,
   },
 
