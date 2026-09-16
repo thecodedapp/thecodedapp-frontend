@@ -9,6 +9,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import {
+  Image,
+  ImageSourcePropType,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -18,6 +20,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import MacoPrimaryButton from "../../components/MacoPrimaryButton";
+import { completeLesson } from "../../lib/lessonProgress";
 
 const COLORS = {
   cream: "#FFF8EE",
@@ -128,6 +131,23 @@ const WHAT_IS_CODE_STEPS: LessonStep[] = [
   },
 ];
 
+const MACO_BY_STEP: ImageSourcePropType[] = [
+  require("../../assets/images/maco-happy-hands-to-side.png"),
+  require("../../assets/images/maco-smiling-looking-up-to-the-side.png"),
+  require("../../assets/images/maco-thinking.png"),
+  require("../../assets/images/maco-gleeful.png"),
+  require("../../assets/images/maco-happy-with-heart-halo.png"),
+  require("../../assets/images/maco-jump.png"),
+];
+
+function MacoCompanion({ source, centered = false }: { source: ImageSourcePropType; centered?: boolean }) {
+  return (
+    <View style={[styles.macoWrap, centered && styles.macoWrapCentered]}>
+      <Image source={source} style={[styles.macoImage, centered && styles.macoImageLarge]} resizeMode="contain" />
+    </View>
+  );
+}
+
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [stepIndex, setStepIndex] = useState(0);
@@ -150,9 +170,14 @@ export default function LessonScreen() {
   const step = steps[stepIndex];
   const progress = (stepIndex + 1) / steps.length;
   const isLastStep = stepIndex === steps.length - 1;
+  const macoSource = MACO_BY_STEP[stepIndex] ?? MACO_BY_STEP[0];
 
-  const goNext = () => {
+  const goNext = async () => {
     if (isLastStep) {
+      if (id === "what-is-code") {
+        await completeLesson(1);
+      }
+
       router.replace("/course-map");
       return;
     }
@@ -186,6 +211,7 @@ export default function LessonScreen() {
         </View>
 
         <ScrollView
+          style={styles.contentScroll}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
@@ -211,6 +237,8 @@ export default function LessonScreen() {
                   ))}
                 </View>
               )}
+
+              <MacoCompanion source={macoSource} />
             </View>
           )}
 
@@ -263,6 +291,8 @@ export default function LessonScreen() {
                   </Text>
                 </View>
               )}
+
+              <MacoCompanion source={macoSource} />
             </View>
           )}
 
@@ -281,6 +311,7 @@ export default function LessonScreen() {
               </View>
 
               <Text style={styles.footerText}>{step.footer}</Text>
+              <MacoCompanion source={macoSource} />
             </View>
           )}
 
@@ -293,6 +324,7 @@ export default function LessonScreen() {
                 {step.title}
               </Text>
               <Text style={[styles.bodyText, styles.completeBody]}>{step.body}</Text>
+              <MacoCompanion source={macoSource} centered />
             </View>
           )}
         </ScrollView>
@@ -302,7 +334,7 @@ export default function LessonScreen() {
             <MacoPrimaryButton
               label={isLastStep ? "Finish Lesson" : "Continue"}
               onPress={() => {
-                if (canContinue) goNext();
+                if (canContinue) void goNext();
               }}
               width="100%"
               height={60}
@@ -376,6 +408,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: COLORS.green,
   },
+  contentScroll: {
+    flex: 1,
+  },
   content: {
     flexGrow: 1,
     paddingHorizontal: 22,
@@ -385,6 +420,7 @@ const styles = StyleSheet.create({
   lessonCard: {
     width: "100%",
     maxWidth: 560,
+    flexGrow: 1,
     alignSelf: "center",
     padding: 24,
     borderRadius: 26,
@@ -514,7 +550,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   miniCard: {
-    width: "47%",
+    flexGrow: 1,
+    flexBasis: "46%",
     minHeight: 108,
     padding: 14,
     borderRadius: 18,
@@ -540,6 +577,22 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     color: COLORS.muted,
+  },
+  macoWrap: {
+    marginTop: "auto",
+    paddingTop: 18,
+    alignItems: "flex-end",
+  },
+  macoWrapCentered: {
+    alignItems: "center",
+  },
+  macoImage: {
+    width: 132,
+    height: 132,
+  },
+  macoImageLarge: {
+    width: 170,
+    height: 170,
   },
   completeCard: {
     alignItems: "center",
