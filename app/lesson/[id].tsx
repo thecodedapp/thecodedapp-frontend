@@ -7,7 +7,7 @@ import {
 } from "@expo-google-fonts/nunito";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   ImageSourcePropType,
@@ -20,6 +20,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import MacoPrimaryButton from "../../components/MacoPrimaryButton";
+import { getLessonById } from "../../lib/lessonCatalog";
 import { completeLesson } from "../../lib/lessonProgress";
 
 const COLORS = {
@@ -35,110 +36,6 @@ const COLORS = {
   successBorder: "#8FC79B",
   white: "#FFFFFF",
 };
-
-type ContentStep = {
-  type: "content";
-  title: string;
-  body: string;
-  callout?: string;
-  bullets?: string[];
-};
-
-type QuizStep = {
-  type: "quiz";
-  title: string;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  successText: string;
-  retryText: string;
-};
-
-type CardsStep = {
-  type: "cards";
-  title: string;
-  body: string;
-  cards: { emoji: string; label: string }[];
-  footer: string;
-};
-
-type CompleteStep = {
-  type: "complete";
-  title: string;
-  body: string;
-};
-
-type LessonStep = ContentStep | QuizStep | CardsStep | CompleteStep;
-
-const WHAT_IS_CODE_STEPS: LessonStep[] = [
-  {
-    type: "content",
-    title: "Code is everywhere.",
-    body:
-      "Apps. Websites. Games. Cars. ATMs. They all work because someone wrote instructions telling a computer what to do.",
-    callout: "Code is how we give computers instructions.",
-  },
-  {
-    type: "content",
-    title: "So... what is code?",
-    body:
-      "Code is a set of instructions written for a computer. Think of it like a recipe: a recipe tells you what to do step by step, and code does the same thing for a computer.",
-    bullets: [
-      "Get bread → Get user input",
-      "Add cheese → Check the input",
-      "Toast it → Show a result",
-    ],
-  },
-  {
-    type: "content",
-    title: "Computers are VERY literal.",
-    body:
-      "Computers do not guess what you meant. They follow the instructions you give them, in the order you give them.",
-    callout: "If the instructions are out of order, the result can be wrong too.",
-  },
-  {
-    type: "quiz",
-    title: "Tiny challenge",
-    question: "You want Maco to turn on a lamp. Which order makes the most sense?",
-    options: [
-      "1. Find the lamp\n2. Press the power button\n3. The lamp turns on",
-      "1. The lamp turns on\n2. Find the lamp\n3. Press the power button",
-    ],
-    correctIndex: 0,
-    successText: "Exactly! The order of instructions matters.",
-    retryText: "Almost! A computer needs the steps in a logical order.",
-  },
-  {
-    type: "cards",
-    title: "What can you make with code?",
-    body: "A lot more than just websites.",
-    cards: [
-      { emoji: "📱", label: "Mobile apps" },
-      { emoji: "🌐", label: "Websites" },
-      { emoji: "🎮", label: "Games" },
-      { emoji: "🤖", label: "AI tools" },
-      { emoji: "⚙️", label: "Automations" },
-      { emoji: "💻", label: "Software" },
-    ],
-    footer:
-      "Different programming languages are good at different kinds of jobs. You'll learn about those soon.",
-  },
-  {
-    type: "complete",
-    title: "You just learned your first programming concept. 🌱",
-    body:
-      "Code is simply a way of giving computers instructions. And you're officially learning how to write them.",
-  },
-];
-
-const MACO_BY_STEP: ImageSourcePropType[] = [
-  require("../../assets/images/maco-thinking.png"),
-  require("../../assets/images/maco-smiling-looking-up-to-the-side.png"),
-  require("../../assets/images/maco-thinking.png"),
-  require("../../assets/images/maco-gleeful.png"),
-  require("../../assets/images/maco-happy-with-heart-halo.png"),
-  require("../../assets/images/maco-jump.png"),
-];
 
 function MacoCompanion({
   source,
@@ -170,24 +67,40 @@ export default function LessonScreen() {
     Nunito_900Black,
   });
 
-  const steps = useMemo(() => {
-    if (id === "what-is-code") return WHAT_IS_CODE_STEPS;
-    return WHAT_IS_CODE_STEPS;
-  }, [id]);
+  const lesson = getLessonById(id);
 
   if (!fontsLoaded) return null;
 
-  const step = steps[stepIndex];
-  const progress = (stepIndex + 1) / steps.length;
-  const isLastStep = stepIndex === steps.length - 1;
-  const macoSource = MACO_BY_STEP[stepIndex] ?? MACO_BY_STEP[0];
+  if (!lesson) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+        <View style={styles.missingLesson}>
+          <Text style={styles.missingTitle}>Lesson not found</Text>
+          <Text style={styles.missingBody}>
+            This lesson is not available yet.
+          </Text>
+          <MacoPrimaryButton
+            label="Back to Course"
+            onPress={() => router.replace("/course-map")}
+            width="100%"
+            height={60}
+            fontSize={18}
+            borderRadius={18}
+            shadowOffset={4}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const step = lesson.steps[stepIndex];
+  const progress = (stepIndex + 1) / lesson.steps.length;
+  const isLastStep = stepIndex === lesson.steps.length - 1;
+  const macoSource = lesson.macoByStep[stepIndex] ?? lesson.macoByStep[0];
 
   const goNext = async () => {
     if (isLastStep) {
-      if (id === "what-is-code") {
-        await completeLesson(1);
-      }
-
+      await completeLesson(lesson.number);
       router.replace("/course-map");
       return;
     }
@@ -196,7 +109,8 @@ export default function LessonScreen() {
     setStepIndex((current) => current + 1);
   };
 
-  const canContinue = step.type !== "quiz" || selectedOption === step.correctIndex;
+  const canContinue =
+    step.type !== "quiz" || selectedOption === step.correctIndex;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
@@ -207,12 +121,12 @@ export default function LessonScreen() {
           </Pressable>
 
           <View style={styles.headerCenter}>
-            <Text style={styles.lessonEyebrow}>LESSON 1</Text>
-            <Text style={styles.lessonTitle}>What is Code?</Text>
+            <Text style={styles.lessonEyebrow}>LESSON {lesson.number}</Text>
+            <Text style={styles.lessonTitle}>{lesson.title}</Text>
           </View>
 
           <Text style={styles.stepCount}>
-            {stepIndex + 1} / {steps.length}
+            {stepIndex + 1} / {lesson.steps.length}
           </Text>
         </View>
 
@@ -396,6 +310,7 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_900Black",
     fontSize: 18,
     color: COLORS.navy,
+    textAlign: "center",
   },
   stepCount: {
     width: 44,
@@ -641,5 +556,24 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.45,
+  },
+  missingLesson: {
+    flex: 1,
+    padding: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  missingTitle: {
+    fontFamily: "Nunito_900Black",
+    fontSize: 28,
+    color: COLORS.navy,
+  },
+  missingBody: {
+    marginTop: 8,
+    marginBottom: 24,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 16,
+    textAlign: "center",
+    color: COLORS.muted,
   },
 });
