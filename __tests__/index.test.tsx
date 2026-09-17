@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { render, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
 import WelcomeScreen from "../app/index";
-import { deleteToken, getToken } from "../lib/authStorage";
+import { deleteToken, getToken, saveUserId } from "../lib/authStorage";
 import { getGoalsCompleted } from "../lib/goalStorage";
 
 jest.mock("expo-router", () => ({
@@ -20,6 +20,7 @@ jest.mock("react-native-safe-area-context", () => ({
 jest.mock("../lib/authStorage", () => ({
   getToken: jest.fn(),
   deleteToken: jest.fn(),
+  saveUserId: jest.fn(),
 }));
 
 jest.mock("../lib/goalStorage", () => ({
@@ -44,7 +45,7 @@ describe("WelcomeScreen auth bootstrap", () => {
     fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
-        user: { email: "user@example.com", emailVerified: true },
+        user: { id: "user-1", email: "user@example.com", emailVerified: true },
       }),
     } as unknown as Response);
 
@@ -53,6 +54,7 @@ describe("WelcomeScreen auth bootstrap", () => {
     await waitFor(() => {
       expect(router.replace).toHaveBeenCalledWith("/goals");
     });
+    expect(saveUserId).toHaveBeenCalledWith("user-1");
     expect(deleteToken).not.toHaveBeenCalled();
   });
 
@@ -62,7 +64,7 @@ describe("WelcomeScreen auth bootstrap", () => {
     fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
-        user: { email: "user@example.com", emailVerified: true },
+        user: { id: "user-1", email: "user@example.com", emailVerified: true },
       }),
     } as unknown as Response);
 
@@ -78,7 +80,7 @@ describe("WelcomeScreen auth bootstrap", () => {
     fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
-        user: { email: "user@example.com", emailVerified: false },
+        user: { id: "user-1", email: "user@example.com", emailVerified: false },
       }),
     } as unknown as Response);
 
