@@ -26,7 +26,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { API_URL } from "../lib/api";
-import { deleteToken, getToken } from "../lib/authStorage";
+import { deleteToken, getToken, saveUserId } from "../lib/authStorage";
 import { getGoalsCompleted } from "../lib/goalStorage";
 
 const COLORS = {
@@ -74,6 +74,7 @@ export default function WelcomeScreen() {
 
         if (response.ok) {
           const data = await response.json();
+          await saveUserId(data.user.id);
 
           if (data.user.emailVerified) {
             const goalsCompleted = await getGoalsCompleted();
