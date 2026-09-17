@@ -17,10 +17,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { deleteToken } from "../lib/authStorage";
 import { getLessonByNumber } from "../lib/lessonCatalog";
-import {
-  getCompletedLessons,
-  getHighestUnlockedLesson,
-} from "../lib/lessonProgress";
+import { getLessonProgress } from "../lib/lessonProgress";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -431,14 +428,11 @@ export default function CourseMap() {
       let isActive = true;
 
       const loadProgress = async () => {
-        const [unlockedLesson, completed] = await Promise.all([
-          getHighestUnlockedLesson(),
-          getCompletedLessons(),
-        ]);
+        const progress = await getLessonProgress();
 
         if (isActive) {
-          setHighestUnlockedLesson(unlockedLesson);
-          setCompletedLessons(completed);
+          setHighestUnlockedLesson(progress.highestUnlockedLesson);
+          setCompletedLessons(progress.completedLessons);
         }
       };
 
