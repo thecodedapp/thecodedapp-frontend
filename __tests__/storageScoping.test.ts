@@ -13,24 +13,24 @@ jest.mock("../lib/authStorage", () => ({
   getToken: jest.fn(),
 }));
 
-const storage = new Map<string, string>();
+const mockStorage = new Map<string, string>();
 
 jest.mock("expo-secure-store", () => ({
-  getItemAsync: jest.fn(async (key: string) => storage.get(key) ?? null),
+  getItemAsync: jest.fn(async (key: string) => mockStorage.get(key) ?? null),
   setItemAsync: jest.fn(async (key: string, value: string) => {
-    storage.set(key, value);
+    mockStorage.set(key, value);
   }),
   deleteItemAsync: jest.fn(async (key: string) => {
-    storage.delete(key);
+    mockStorage.delete(key);
   }),
 }));
 
 const getUserIdMock = getUserId as jest.MockedFunction<typeof getUserId>;
 const getTokenMock = getToken as jest.MockedFunction<typeof getToken>;
 
-describe("account-scoped local storage", () => {
+describe("account-scoped local mockStorage", () => {
   beforeEach(() => {
-    storage.clear();
+    mockStorage.clear();
     jest.clearAllMocks();
     getTokenMock.mockResolvedValue(null);
   });
